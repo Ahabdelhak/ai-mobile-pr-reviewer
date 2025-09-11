@@ -1,0 +1,69 @@
+name: Reusable • AI Mobile PR Review
+
+on:
+  workflow_call:
+    inputs:
+      model_name:
+        type: string
+        default: gpt-4o-mini
+      max_patch_chars:
+        type: number
+        default: 12000
+      max_files:
+        type: number
+        default: 25
+      file_globs:
+        type: string
+        default: "*.kt,*.kts,*.java,*.xml,*.swift,*.m,*.mm,*.gradle,*.gradle.kts,*.pro,*.plist,*.md"
+      rubric_url:
+        type: string
+        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/v1/rubric/mobile_review.md"
+      script_url:
+        type: string
+        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/v1/scripts/review_pr.py"
+    secrets:
+      OPENAI_API_KEY:
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests openai==1.* tiktoken
+
+      - name: Download reviewer script
+        env:
+          TOKEN: ${{ secrets.RUBRIC_READ_TOKEN }}
+        run: |
+          mkdir -p .ai-mobile
+          if [ -n "$TOKEN" ]; then
+            curl -fsSL -H "Authorization: token ${TOKEN}" "${{ inputs.script_url }}" -o .ai-mobile/review_pr.py
+          else
+            curl -fsSL "${{ inputs.script_url }}" -o .ai-mobile/review_pr.py
+          fi
+
+      - name: Run AI Mobile PR Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          # from caller
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}      # forwarded by caller
+          RUBRIC_URL: ${{ inputs.rubric_url }}
+          MODEL_NAME: ${{ inputs.model_name }}
+          MAX_PATCH_CHARS: ${{ inputs.max_patch_chars }}
+          MAX_FILES: ${{ inputs.max_files }}
+          FILE_GLOBS: ${{ inputs.file_globs }}
+        run: python .ai-mobile/review_pr.py
