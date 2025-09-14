@@ -40,7 +40,7 @@ MODEL_NAME      = os.environ.get("MODEL_NAME", "gpt-4o-mini")
 MAX_PATCH_CHARS = int(os.environ.get("MAX_PATCH_CHARS", "12000"))
 MAX_FILES       = int(os.environ.get("MAX_FILES", "25"))
 FILE_GLOBS      = os.environ.get("FILE_GLOBS", "*.kt,*.kts,*.java,*.xml,*.swift,*.m,*.mm,*.gradle,*.gradle.kts,*.pro,*.plist,*.md")
-RUBRIC_URL      = os.environ.get("RUBRIC_URL", "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/v1/rubric/mobile_review.md")
+RUBRIC_URL      = os.environ.get("RUBRIC_URL", "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/rubric/mobile_review.md")
 
 if not (GITHUB_TOKEN and REPO and EVENT_PATH and OPENAI_API_KEY):
     print("Missing required env vars: GITHUB_TOKEN / GITHUB_REPOSITORY / GITHUB_EVENT_PATH / OPENAI_API_KEY")
