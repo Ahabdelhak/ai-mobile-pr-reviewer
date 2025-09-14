@@ -15,12 +15,9 @@ on:
       file_globs:
         type: string
         default: "*.kt,*.kts,*.java,*.xml,*.swift,*.m,*.mm,*.gradle,*.gradle.kts,*.pro,*.plist,*.md"
-      rubric_url:
-        type: string
-        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/v1/rubric/mobile_review.md"
       script_url:
         type: string
-        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/v1/scripts/review_pr.py"
+        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/scripts/review_pr.py"
     secrets:
       OPENAI_API_KEY:
         required: true
