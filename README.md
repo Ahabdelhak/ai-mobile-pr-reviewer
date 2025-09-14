@@ -1,6 +1,6 @@
 # 🤖 AI Mobile PR Reviewer
 
-**AI Mobile PR Reviewer** is a GitHub Action that automatically reviews pull requests for **mobile codebases** (Android, iOS, Flutter, React, cross-platform).  
+**AI Mobile PR Reviewer** is a GitHub Action that automatically reviews pull requests for **mobile codebases** (Android, iOS,cross-platform).  
 It uses OpenAI’s models and a central rubric to provide structured, actionable feedback — saving reviewers’ time and improving code quality.
 
 ---
@@ -72,6 +72,18 @@ The Action will run automatically and leave an AI-generated review comment on th
 4. Loads rubric from the central repo
 5. Builds a context prompt and queries OpenAI model
 6. Posts a structured review back as a PR comment
+
+## 📝 TO DO (Roadmap)
+
+Planned improvements for upcoming releases:
+
+- [X] Cost optimization (batching diffs, token limits, caching)
+- [ ] Multi-language support (Flutter/Dart, React Native, C++ for mobile)
+- [ ] Configurable rubric per repo (override central rubric with local rules)
+- [ ] Inline review comments (comment directly on code lines, not just summary)
+- [ ] Custom model selection (support for GPT-4.1, Anthropic, open-source LLMs)
+- [ ] Rich reporting (summary + checklist in Markdown tables)
+- [ ] Slack/Teams integration (notify teams of high-risk PRs)
 
 ## 🤝 Contributing
 
