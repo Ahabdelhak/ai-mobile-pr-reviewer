@@ -133,6 +133,20 @@ def sanitize_patch(patch: str) -> str:
             out_lines.append(line)
     return "\n".join(out_lines)
 
+# ---- Rubric loading ----
+def load_rubric() -> str:
+    try:
+        if RUBRIC_URL:
+            r = requests.get(RUBRIC_URL, timeout=10)
+            r.raise_for_status()
+            return r.text
+        else:
+            return "No rubric URL provided."
+    except Exception as e:
+        # Minimal fallback rubric
+        return f"""
+# AI Mobile PR Review Rubric (Fallback)
+
 ## Correctness
 - Android lifecycle & coroutines; iOS ARC & SwiftUI state; proper async/error handling.
 
