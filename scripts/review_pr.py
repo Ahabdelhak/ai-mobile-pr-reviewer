@@ -4,7 +4,7 @@
 """
 AI Mobile based PR Reviewer
 - Mobile-focused rubric (Android/iOS/cross-platform)
-- Loads rubric from central URL (RUBRIC_URL), supports private repos via RUBRIC_TOKEN
+- Loads rubric from central URL (RUBRIC_URL)
 - Filters noisy/binary/irrelevant files by glob + ignore rules
 - Summarizes diffs and posts one structured PR review comment
 
@@ -17,6 +17,7 @@ Environment (provided by GitHub Actions + secrets):
   MAX_PATCH_CHARS     (optional, default: 12000)
   MAX_FILES           (optional, default: 25)
   FILE_GLOBS          (optional, default covers Kotlin/Swift/Gradle/XML/plist)
+  RUBRIC_URL          (optional, defaults to your central rubric file)
 """
 
 import os
@@ -24,7 +25,6 @@ import re
 import sys
 import json
 from typing import List, Dict
-
 import requests
 
 # ---- Required env ----
@@ -38,10 +38,13 @@ MODEL_NAME      = os.environ.get("MODEL_NAME", "gpt-4o-mini")
 MAX_PATCH_CHARS = int(os.environ.get("MAX_PATCH_CHARS", "12000"))
 MAX_FILES       = int(os.environ.get("MAX_FILES", "25"))
 FILE_GLOBS      = os.environ.get("FILE_GLOBS", "*.kt,*.kts,*.java,*.xml,*.swift,*.m,*.mm,*.gradle,*.gradle.kts,*.pro,*.plist,*.md")
-RUBRIC_URL      = os.environ.get("RUBRIC_URL", "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/rubric/mobile_review.md")
+RUBRIC_URL      = os.environ.get(
+    "RUBRIC_URL",
+    "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/rubric/mobile_review.md"
+)
 
 if not (GITHUB_TOKEN and REPO and EVENT_PATH and OPENAI_API_KEY):
-    print("Missing required env vars: GITHUB_TOKEN / GITHUB_REPOSITORY / GITHUB_EVENT_PATH / OPENAI_API_KEY")
+    print("❌ Missing required env vars: GITHUB_TOKEN / GITHUB_REPOSITORY / GITHUB_EVENT_PATH / OPENAI_API_KEY")
     sys.exit(1)
 
 # ---- Load PR event ----
@@ -60,10 +63,7 @@ api_base = f"https://api.github.com/repos/{REPO}"
 def gh_get(url: str, params=None):
     r = requests.get(
         url,
-        headers={
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
-            "Accept": "application/vnd.github+json",
-        },
+        headers={"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github+json"},
         params=params,
         timeout=30,
     )
@@ -73,10 +73,7 @@ def gh_get(url: str, params=None):
 def gh_post(url: str, body: Dict):
     r = requests.post(
         url,
-        headers={
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
-            "Accept": "application/vnd.github+json",
-        },
+        headers={"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github+json"},
         json=body,
         timeout=60,
     )
@@ -87,7 +84,6 @@ def post_comment_on_pr(body: str):
     gh_post(f"{api_base}/issues/{pr_number}/comments", {"body": body})
 
 # ---- File filtering ----
-# Convert comma-separated globs to a regex (e.g., "*.kt,*.swift" -> (.*\.kt|.*\.swift)$)
 def compile_glob_regex(globs: str):
     parts = [p.strip().replace(".", r"\.").replace("*", ".*") for p in globs.split(",") if p.strip()]
     if not parts:
@@ -123,7 +119,6 @@ def fetch_changed_files() -> List[Dict]:
 def sanitize_patch(patch: str) -> str:
     if not patch:
         return ""
-    # Keep only first N chars; trim very long lines
     patch = patch[:MAX_PATCH_CHARS]
     out_lines = []
     for line in patch.splitlines():
@@ -143,7 +138,6 @@ def load_rubric() -> str:
         else:
             return "No rubric URL provided."
     except Exception as e:
-        # Minimal fallback rubric
         return f"""
 # AI Mobile PR Review Rubric (Fallback)
 
@@ -165,7 +159,7 @@ def load_rubric() -> str:
 (⚠️ Failed to load rubric from {RUBRIC_URL}: {e})
 """
 
-# ---- Context hints (helps the LLM tailor the review) ----
+# ---- Context hints ----
 def detect_mobile_context(file_summaries: List[Dict]) -> str:
     names = " ".join(f["filename"] for f in file_summaries)
     hints = []
@@ -194,7 +188,7 @@ PATCH (trimmed):
         )
     files_block = "\n\n".join(files_block_parts)
 
-        pr_overview = f"PR TITLE: {pr_title}\n\nPR DESCRIPTION:\n{pr_body or '(no description)'}"
+    pr_overview = f"PR TITLE: {pr_title}\n\nPR DESCRIPTION:\n{pr_body or '(no description)'}"
 
     mobile_guidance = """
 You are an expert senior mobile engineer (Android/iOS). Review ONLY the provided diffs.
@@ -236,18 +230,16 @@ def openai_review(prompt: str) -> str:
 
 # ---- Main flow ----
 def main():
-    # Gather changed files
     changed_files = fetch_changed_files()
-
-    # Filter & prepare
     prepared: List[Dict] = []
+
     for f in changed_files:
         filename = f.get("filename") or ""
         if is_ignored(filename):
             continue
         patch = sanitize_patch(f.get("patch") or "")
         if not patch.strip():
-            continue  # skip empty/rename/binary
+            continue
         prepared.append({
             "filename": filename,
             "status": f.get("status"),
@@ -264,7 +256,6 @@ def main():
 
     pr_title = pr.get("title", "")
     pr_body  = pr.get("body", "")
-
     prompt = make_prompt(pr_title, pr_body, prepared)
 
     try:
