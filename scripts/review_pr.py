@@ -17,8 +17,6 @@ Environment (provided by GitHub Actions + secrets):
   MAX_PATCH_CHARS     (optional, default: 12000)
   MAX_FILES           (optional, default: 25)
   FILE_GLOBS          (optional, default covers Kotlin/Swift/Gradle/XML/plist)
-  RUBRIC_URL          (optional, central rubric raw URL)
-  RUBRIC_TOKEN        (optional, for private rubric repo raw access)
 """
 
 import os
@@ -135,19 +133,6 @@ def sanitize_patch(patch: str) -> str:
             out_lines.append(line)
     return "\n".join(out_lines)
 
-# ---- Rubric loading ----
-def load_rubric() -> str:
-    headers = {}
-    if RUBRIC_TOKEN:
-        headers["Authorization"] = f"token {RUBRIC_TOKEN}"
-    try:
-        r = requests.get(RUBRIC_URL, headers=headers, timeout=10)
-        r.raise_for_status()
-        return r.text
-    except Exception as e:
-        # Minimal fallback rubric so the review still runs
-        return f"""# AI Mobile PR Review Rubric (Fallback)
-
 ## Correctness
 - Android lifecycle & coroutines; iOS ARC & SwiftUI state; proper async/error handling.
 
@@ -162,9 +147,6 @@ def load_rubric() -> str:
 
 ## Testing / Coverage
 - Unit tests for ViewModels/UseCases; UI tests; offline/retry edge cases.
-
-(⚠️ Failed to load org rubric from {RUBRIC_URL}: {e})
-"""
 
 # ---- Context hints (helps the LLM tailor the review) ----
 def detect_mobile_context(file_summaries: List[Dict]) -> str:
