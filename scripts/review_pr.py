@@ -191,9 +191,8 @@ PATCH (trimmed):
         )
     files_block = "\n\n".join(files_block_parts)
 
-    pr_overview = f"PR TITLE: {pr_title}\n\nPR DESCRIPTION:\n{pr_body or '(no description)'}"
+        pr_overview = f"PR TITLE: {pr_title}\n\nPR DESCRIPTION:\n{pr_body or '(no description)'}"
 
-    # The rubric defines categories and output format; we prepend system guidance below.
     mobile_guidance = """
 You are an expert senior mobile engineer (Android/iOS). Review ONLY the provided diffs.
 Produce:
