@@ -13,6 +13,14 @@ It uses OpenAI’s models and a central rubric to provide structured, actionable
 - ✅ **Actionable suggestions** — correctness, performance, security, maintainability, testing.  
 - 🤝 **Seamless GitHub integration** — posts a structured review comment directly on PRs.  
 - 🪶 **Lightweight** — no infra to maintain, runs entirely via GitHub Actions.
+---
+
+## 🎥 Demo Ai Reviewer
+
+Check out a real demo review here:  
+👉 [View Demo Review](https://github.com/Ahabdelhak/InstaCrypto/pull/7#issuecomment-3289553439)
+
+*(This shows how the AI reviewer leaves structured comments directly on a pull request.)*
 
 ---
 
