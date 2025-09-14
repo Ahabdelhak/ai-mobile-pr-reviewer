@@ -162,6 +162,9 @@ def load_rubric() -> str:
 ## Testing / Coverage
 - Unit tests for ViewModels/UseCases; UI tests; offline/retry edge cases.
 
+(⚠️ Failed to load rubric from {RUBRIC_URL}: {e})
+"""
+
 # ---- Context hints (helps the LLM tailor the review) ----
 def detect_mobile_context(file_summaries: List[Dict]) -> str:
     names = " ".join(f["filename"] for f in file_summaries)
