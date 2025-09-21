@@ -18,7 +18,7 @@ It uses OpenAI’s models and a central rubric to provide structured, actionable
 ## 🎥 Demo Ai Reviewer
 
 Check out a real demo review here:  
-👉 [View Demo Review](https://github.com/Ahabdelhak/InstaCrypto/pull/7#issuecomment-3289553439)
+👉 [View Demo Review](https://github.com/Ahabdelhak/InstaCrypto/pull/9#issuecomment-3315928198)
 
 *(This shows how the AI reviewer leaves structured comments directly on a pull request.)*
 
