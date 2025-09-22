@@ -15,12 +15,17 @@ on:
       file_globs:
         type: string
         default: "*.kt,*.kts,*.java,*.xml,*.swift,*.m,*.mm,*.gradle,*.gradle.kts,*.pro,*.plist,*.md"
-      script_url:
+      rubric_url:
         type: string
-        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/scripts/main.py"
+        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/rubric/mobile_review.md"
+      script_base_url:
+        type: string
+        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/scripts"
     secrets:
       OPENAI_API_KEY:
         required: true
+      RUBRIC_READ_TOKEN:
+        required: false
 
 permissions:
   contents: read
@@ -38,29 +43,44 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install deps
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests openai==1.* tiktoken
 
-      - name: Download reviewer script
+      - name: Download reviewer scripts
         env:
           TOKEN: ${{ secrets.RUBRIC_READ_TOKEN }}
         run: |
-          mkdir -p .ai-mobile
-          if [ -n "$TOKEN" ]; then
-            curl -fsSL -H "Authorization: token ${TOKEN}" "${{ inputs.script_url }}" -o .ai-mobile/main.py
-          else
-            curl -fsSL "${{ inputs.script_url }}" -o .ai-mobile/main.py
-          fi
+          mkdir -p ai_mobile
+          files=(
+            "main.py"
+            "config.py"
+            "http_client.py"
+            "file_filter.py"
+            "rubric_loader.py"
+            "prompt_builder.py"
+            "reviewer.py"
+          )
+          for file in "${files[@]}"; do
+            if [ -n "$TOKEN" ]; then
+              curl -fsSL -H "Authorization: token ${TOKEN}" "${{ inputs.script_base_url }}/$file" -o "ai_mobile/$file"
+            else
+              curl -fsSL "${{ inputs.script_base_url }}/$file" -o "ai_mobile/$file"
+            fi
+          done
+          touch ai_mobile/__init__.py
+
+      - name: Debug directory contents
+        run: ls -R ai_mobile
 
       - name: Run AI Mobile PR Review
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          # from caller
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}      # forwarded by caller
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           RUBRIC_URL: ${{ inputs.rubric_url }}
           MODEL_NAME: ${{ inputs.model_name }}
           MAX_PATCH_CHARS: ${{ inputs.max_patch_chars }}
           MAX_FILES: ${{ inputs.max_files }}
           FILE_GLOBS: ${{ inputs.file_globs }}
-        run: python .ai-mobile/main.py
+        run: python -m ai_mobile.main
