@@ -17,7 +17,7 @@ on:
         default: "*.kt,*.kts,*.java,*.xml,*.swift,*.m,*.mm,*.gradle,*.gradle.kts,*.pro,*.plist,*.md"
       script_url:
         type: string
-        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/scripts/main.py"
+        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/scripts/review_pr.py"
     secrets:
       OPENAI_API_KEY:
         required: true
@@ -49,9 +49,9 @@ jobs:
         run: |
           mkdir -p .ai-mobile
           if [ -n "$TOKEN" ]; then
-            curl -fsSL -H "Authorization: token ${TOKEN}" "${{ inputs.script_url }}" -o .ai-mobile/main.py
+            curl -fsSL -H "Authorization: token ${TOKEN}" "${{ inputs.script_url }}" -o .ai-mobile/review_pr.py
           else
-            curl -fsSL "${{ inputs.script_url }}" -o .ai-mobile/main.py
+            curl -fsSL "${{ inputs.script_url }}" -o .ai-mobile/review_pr.py
           fi
 
       - name: Run AI Mobile PR Review
@@ -63,4 +63,4 @@ jobs:
           MAX_PATCH_CHARS: ${{ inputs.max_patch_chars }}
           MAX_FILES: ${{ inputs.max_files }}
           FILE_GLOBS: ${{ inputs.file_globs }}
-        run: python .ai-mobile/main.py
+        run: python .ai-mobile/review_pr.py
