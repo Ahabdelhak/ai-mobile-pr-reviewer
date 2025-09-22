@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from config import load_config
-from http_client import GitHubClient
-from file_filter import FileFilter
-from rubric_loader import RubricLoader
-from prompt_builder import PromptBuilder
-from reviewer import PRReviewer
+from .config import load_config
+from .http_client import GitHubClient
+from .file_filter import FileFilter
+from .rubric_loader import RubricLoader
+from .prompt_builder import PromptBuilder
+from .reviewer import PRReviewer
 
 def main():
     """Entry point for the AI Mobile PR Reviewer."""
