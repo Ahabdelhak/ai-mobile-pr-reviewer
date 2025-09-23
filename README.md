@@ -50,7 +50,6 @@ jobs:
       max_files: 25
       max_patch_chars: 12000
       file_globs: "*.kt,*.kts,*.java,*.xml,*.swift,*.m,*.mm,*.gradle,*.gradle.kts,*.pro,*.plist,*.md"
-      rubric_url: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/rubric/mobile_review.md"
 ```
 
 ### 2. Add your OpenAI API key
