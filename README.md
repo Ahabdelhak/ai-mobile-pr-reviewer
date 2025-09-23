@@ -1,7 +1,7 @@
 # 🤖 AI Mobile PR Reviewer
 
 **AI Mobile PR Reviewer** is a GitHub Action that automatically reviews pull requests for **mobile codebases** (Android, iOS,cross-platform).  
-It uses OpenAI’s models and a central rubric to provide structured, actionable feedback — saving reviewers’ time and improving code quality.
+It leverages advanced LLMs and a central rubric to provide structured, actionable feedback — saving reviewers’ time and improving code quality.
 
 ---
 
