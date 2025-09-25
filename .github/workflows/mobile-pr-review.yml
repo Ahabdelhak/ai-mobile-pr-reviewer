@@ -20,7 +20,7 @@ on:
         default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/rubric/mobile_review.md"
       script_base_url:
         type: string
-        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/feature/slack-integration/scripts"
+        default: "https://raw.githubusercontent.com/Ahabdelhak/ai-mobile-pr-reviewer/main/scripts"
     secrets:
       OPENAI_API_KEY:
         required: true
