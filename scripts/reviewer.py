@@ -1,5 +1,7 @@
 import json
 import openai
+import re
+from typing import Tuple
 from typing import List, Dict
 from .config import Config
 from .http_client import GitHubClient
@@ -21,6 +23,7 @@ class PRReviewer:
         self.pr = self.event.get("pull_request") or {}
         self.pr_number = self.pr.get("number")
         if not self.pr_number:
+            import sys
             print("Not a PR event. Exiting.")
             sys.exit(0)
     
@@ -36,6 +39,28 @@ class PRReviewer:
             temperature=0.2,
         )
         return resp.choices[0].message.content.strip()
+    
+    def parse_risk_level(self, review: str) -> str:
+        """Parse the risk level from the review text."""
+        # Look for "Risk Assessment: Low/Medium/High" pattern
+        match = re.search(r"Risk Assessment:\s*(Low|Medium|High)", review, re.IGNORECASE)
+        if match:
+            return match.group(1).strip().lower()
+        # Fallback: scan for standalone "High risk"
+        if re.search(r"\bHigh risk\b", review, re.IGNORECASE):
+            return "high"
+        return "low"  # Default to low if unclear
+    
+    def send_slack_alert(self, risk_level: str, review: str) -> None:
+        """Send Slack alert if risk is high."""
+
+        from .slack_client import SlackClient
+        slack_client = SlackClient(self.config.slack_webhook_url)
+        pr_url = self.pr.get("html_url", "")
+        repo_name = self.config.repo
+        title = self.pr.get("title", "Untitled PR")
+        message = f"🚨 *High-Risk PR Alert*\nRepo: {repo_name}\nPR: [{title}]({pr_url})\n\nReview Summary:\n```{review[:1000]}...```\n[View Full PR]({pr_url})"
+        slack_client.post_message(message)
     
     def run(self) -> None:
         """Execute the PR review workflow."""
@@ -69,8 +94,10 @@ class PRReviewer:
         
         try:
             review = self.openai_review(prompt)
+            risk_level = self.parse_risk_level(review)
             header = "### 🤖 AI Mobile PR Review\n"
             footer = "\n\n---\n_This is an automated mobile-focused review. Please verify suggestions before applying._"
             self.github_client.post_comment(self.pr_number, header + review + footer)
+            self.send_slack_alert(risk_level, review)
         except Exception as e:
             self.github_client.post_comment(self.pr_number, f"🤖 **AI Mobile PR Review** failed: `{e}`")

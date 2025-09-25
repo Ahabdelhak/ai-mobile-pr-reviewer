@@ -13,6 +13,7 @@ class Config:
         self.openai_api_key: str = os.environ.get("OPENAI_API_KEY", "")
         
         # Optional environment variables with defaults
+        self.slack_webhook_url: str = os.environ.get("SLACK_WEBHOOK_URL", "")
         self.model_name: str = os.environ.get("MODEL_NAME", "gpt-4o-mini")
         self.max_patch_chars: int = int(os.environ.get("MAX_PATCH_CHARS", "12000"))
         self.max_files: int = int(os.environ.get("MAX_FILES", "25"))
