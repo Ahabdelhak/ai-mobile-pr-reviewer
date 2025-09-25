@@ -44,7 +44,7 @@ Produce:
 1) High-level PR summary
 2) Findings grouped: Correctness, Performance, Security, Readability/Maintainability, Testing/Coverage
 3) Actionable suggestions (brief, with code snippet if needed)
-4) Risk Assessment: Low/Medium/High + pre-merge checklist
+4) Risk Assessment: Exactly one of "Low", "Medium", or "High" (use format: "Risk Assessment: High") + pre-merge checklist
 5) TODOs / Follow-ups
 Be concise and avoid speculation beyond the diffs.
 """
