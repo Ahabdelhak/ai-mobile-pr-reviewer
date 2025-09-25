@@ -45,6 +45,7 @@ jobs:
       pull-requests: write
     secrets:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     with:
       model_name: gpt-4o-mini
       max_files: 25
@@ -76,13 +77,13 @@ The Action will run automatically and leave an AI-generated review comment on th
 
 Planned improvements for upcoming releases:
 
+- [X] Slack integration (notify teams of high-risk PRs)
 - [X] Cost optimization (batching diffs, token limits, caching)
 - [ ] Multi-language support (React Native, C++ for mobile)
 - [ ] Configurable rubric per repo (override central rubric with local rules)
 - [ ] Inline review comments (comment directly on code lines, not just summary)
 - [ ] Custom model selection (support for GPT-4.1, Anthropic, open-source LLMs)
 - [ ] Rich reporting (summary + checklist in Markdown tables)
-- [ ] Slack/Teams integration (notify teams of high-risk PRs)
 
 ## 🤝 Contributing
 
