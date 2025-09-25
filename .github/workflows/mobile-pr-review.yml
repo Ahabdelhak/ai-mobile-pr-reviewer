@@ -24,6 +24,8 @@ on:
     secrets:
       OPENAI_API_KEY:
         required: true
+      SLACK_WEBHOOK_URL:
+        required: false  
       RUBRIC_READ_TOKEN:
         required: false
 
@@ -61,6 +63,7 @@ jobs:
             "rubric_loader.py"
             "prompt_builder.py"
             "reviewer.py"
+            "slack_client.py"
           )
           for file in "${files[@]}"; do
             if [ -n "$TOKEN" ]; then
@@ -82,5 +85,6 @@ jobs:
           MODEL_NAME: ${{ inputs.model_name }}
           MAX_PATCH_CHARS: ${{ inputs.max_patch_chars }}
           MAX_FILES: ${{ inputs.max_files }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           FILE_GLOBS: ${{ inputs.file_globs }}
         run: python -m ai_mobile.main

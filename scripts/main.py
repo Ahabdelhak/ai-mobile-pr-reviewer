@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import sys
 from .config import load_config
 from .http_client import GitHubClient
 from .file_filter import FileFilter
@@ -16,6 +17,8 @@ def main():
     prompt_builder = PromptBuilder(rubric_loader)
     reviewer = PRReviewer(config, github_client, file_filter, prompt_builder)
     reviewer.run()
+
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
