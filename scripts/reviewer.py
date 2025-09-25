@@ -53,8 +53,9 @@ class PRReviewer:
     
     def send_slack_alert(self, risk_level: str, review: str) -> None:
         """Send Slack alert if risk is high."""
-    
-        
+         if risk_level != "high":
+                return
+
         from .slack_client import SlackClient
         slack_client = SlackClient(self.config.slack_webhook_url)
         pr_url = self.pr.get("html_url", "")
