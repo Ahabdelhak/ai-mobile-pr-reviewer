@@ -79,11 +79,11 @@ Planned improvements for upcoming releases:
 
 - [X] Slack integration (notify teams of high-risk PRs)
 - [X] Cost optimization (batching diffs, token limits, caching)
-- [ ] Multi-language support (React Native, C++ for mobile)
-- [ ] Configurable rubric per repo (override central rubric with local rules)
+- [X] Multi-language support (React Native, C++ for mobile)
+- [X] Configurable rubric per repo (override central rubric with local rules)
 - [ ] Inline review comments (comment directly on code lines, not just summary)
-- [ ] Custom model selection (support for GPT-4.1, Anthropic, open-source LLMs)
-- [ ] Rich reporting (summary + checklist in Markdown tables)
+- [X] Custom model selection (support for GPT-4.1, Anthropic, open-source LLMs)
+- [X] Rich reporting (summary + checklist in Markdown tables)
 
 ## 🤝 Contributing
 
